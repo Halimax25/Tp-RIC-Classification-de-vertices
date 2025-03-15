@@ -53,7 +53,7 @@ class MLP:
             self.A.append(A) #sauvgarde de l'activation
         return A
         
-        def backward(self, X, Y):
+     def backward(self, X, Y):
         Y=Y.reshape(-1,1)
         m = 1# un seule exemple traite a la fois
         #calcul de l'erreur de sortie:On mesure l'écart entre la sortie actuelle et la sortie attendue.
