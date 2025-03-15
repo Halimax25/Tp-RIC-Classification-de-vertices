@@ -52,6 +52,20 @@ class MLP:
             A = self.sigmoid(Z) #la foction d'activation
             self.A.append(A) #sauvgarde de l'activation
         return A
-
+        
+        def backward(self, X, Y):
+        Y=Y.reshape(-1,1)
+        m = 1# un seule exemple traite a la fois
+        #calcul de l'erreur de sortie:On mesure l'écart entre la sortie actuelle et la sortie attendue.
+        deltas=[(self.A[-1] - Y) * self.derivé_sigmoid(self.A[-1])]
+        #calcule des deltas pour les cauches cachees
+        #Propagation de l'erreur en arrière :
+        for i in range(len(self.W)-1, 0, -1):
+            delta = np.dot(self.W[i].T, deltas[0]) * self.derivé_sigmoid(self.A[i])
+            deltas.insert(0, delta)
+            # mise a jour des poids et biais
+            for i in range(len(self.W)):
+                self.W[i] -= self.alpha * np.dot(deltas[i], self.A[i].T)/m
+                self.b[i] -= self.alpha * np.sum(deltas[i],axis=1, keepdims=True)/m
 
  
