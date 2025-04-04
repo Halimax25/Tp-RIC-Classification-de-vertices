@@ -97,3 +97,7 @@ mlp = MLP(n_entrées=2, couche_cachés=[4],n_sorties=1,alpha=0.1)
 mlp.train(X,Y,N_ITER=5000)
 predections = mlp.prediction(X)
 print("Predection apres entrainement : ", predections.T)
+#-------------------4eme QST --------------------------
+data_set = np.loadtxt("data.txt")
+X = data_set[:,:-1]#extrait les donne sauf le derniere
+Y = data_set[:,-1]
