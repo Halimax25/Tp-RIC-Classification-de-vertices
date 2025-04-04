@@ -101,3 +101,12 @@ print("Predection apres entrainement : ", predections.T)
 data_set = np.loadtxt("data.txt")
 X = data_set[:,:-1]#extrait les donne sauf le derniere
 Y = data_set[:,-1]
+print("X : \n ",X,"\n---------------")
+print("Y : \n ",Y,)
+
+X = (X- X.mean(axis = 0)/ X.std(axis = 0))
+mlp1=MLP(n_entrées=3,couche_cachés=[5], n_sorties=1,alpha=0.01)
+mlp1.train(X,Y,N_ITER=50)
+
+predections=mlp1.prediction(X)
+print("---------",mlp1.prediction(X))
