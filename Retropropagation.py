@@ -104,9 +104,14 @@ Y = data_set[:,-1]
 print("X : \n ",X,"\n---------------")
 print("Y : \n ",Y,)
 
-X = (X- X.mean(axis = 0)/ X.std(axis = 0))
-mlp1=MLP(n_entrées=3,couche_cachés=[5], n_sorties=1,alpha=0.01)
-mlp1.train(X,Y,N_ITER=50)
+ens_entr = int(0.8 * X.shape[0])
+indices = np.arange(X.shape[0])
+np.random.shuffle(indices)#Melange sleatroirement des indices
+X_entr, X_test = X[indices[:ens_entr]], X[indices[ens_entr:]]
+Y_entr, Y_test = Y[indices[:ens_entr]], Y[indices[ens_entr:]]
 
-predections=mlp1.prediction(X)
-print("---------",mlp1.prediction(X))
+mlp1=MLP(n_entrées=X_entr.shape[1],couche_cachés=[5], n_sorties=1,alpha=0.01)
+mlp1.train(X,Y,N_ITER=50)
+predections=mlp1.prediction(X_test)
+print("--Predection: \n ",predections.T)
+print("Y:",Y_test)
