@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class MLP:
@@ -84,7 +86,10 @@ class MLP:
     def prediction(self, X):
         return self.forward(X)
 
+    def accuracy(self,pred,y_true):
 
+        pred_lbs = (pred > 0.5).astype(int) #convertir les prediction en valeur binaire
+        return np.mean(pred_lbs.flatten() == y_true.flatten()) # calculer la precision en comparant les prediction avec les vrais valeur
 
 
 """--------------------------------------------------------------------------------------------------------------------------------------"""
@@ -110,8 +115,26 @@ np.random.shuffle(indices)#Melange sleatroirement des indices
 X_entr, X_test = X[indices[:ens_entr]], X[indices[ens_entr:]]
 Y_entr, Y_test = Y[indices[:ens_entr]], Y[indices[ens_entr:]]
 
-mlp1=MLP(n_entrées=X_entr.shape[1],couche_cachés=[5], n_sorties=1,alpha=0.01)
-mlp1.train(X,Y,N_ITER=50)
+mlp1 = MLP(n_entrées=X_entr.shape[1],couche_cachés=[5], n_sorties=1,alpha=0.01)
+mlp1.train(X_entr,Y_entr,N_ITER=50)
 predections=mlp1.prediction(X_test)
-print("--Predection: \n ",predections.T)
-print("Y:",Y_test)
+"""print("--Predection: \n ",predections.T)
+print("Y:",Y_test)"""
+acc = mlp.accuracy(predections, Y_test)
+print(f"Accurcy sur le test : {acc * 100} %")
+#----------------------- 5 QST --------------------------------
+#obtenir les prediction pour les donnees de test
+predictions_test = mlp1.prediction(X_test)
+prediction_labs = (predictions_test > 0.5).astype(int).flatten()
+#couleur selon la prediction
+colors = ['red' if label == 1 else 'blue' for label in prediction_labs]
+#tracer les points dans l'espace 3D
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection = '3d')
+ax.scatter(X_test[:, 0], X_test[:, 1], X_test[:, 2], c=colors, s=10)
+ax.set_title("Reconstruction du vase a partir es predictions MLP")
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
+
+plt.show()
