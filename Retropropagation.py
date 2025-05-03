@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
 
 
@@ -90,7 +91,31 @@ class MLP:
 
         pred_lbs = (pred > 0.5).astype(int) #convertir les prediction en valeur binaire
         return np.mean(pred_lbs.flatten() == y_true.flatten()) # calculer la precision en comparant les prediction avec les vrais valeur
+    def sauvegarder_meill_cordoo(self,X_test,Y_test, predictions,fichier='coordonee_X_Y_Z.cvs'):
+        predi = (predictions > 0.5).astype(int).flatten()
+        Y_test_flat = Y_test.flatten()
+        coord = []
+        #extraire les cordonnees
+        for i in range(len(Y_test)):
+            if predi[i] ==  Y_test_flat[i]:
+                x, y, z = X_test[i][:3]
+                coord.append([x, y, z])
+        #Sauvga si les cordds sont correct
+        if coord:
+            df = pd.DataFrame(coord, columns=["x","y","z"])
+            df.to_csv(fichier, index=False, sep=' ', header=False)
+            print(f"{len(df)} coordonnees sauvgarder dans le ficier {fichier}")
+        else:
+            print("Aucune coordonnee correct a sauvgarder.")
 
+
+
+
+
+"""    def calculer_r(self,X):
+        r = np.sqrt(X[:, 0]**2 + X[:, 1]**2)
+        z=X[:, 2]
+        return np.column_stack((r,z))"""
 
 """--------------------------------------------------------------------------------------------------------------------------------------"""
 
@@ -116,14 +141,16 @@ X_entr, X_test = X[indices[:ens_entr]], X[indices[ens_entr:]]
 Y_entr, Y_test = Y[indices[:ens_entr]], Y[indices[ens_entr:]]
 
 mlp1 = MLP(n_entrées=X_entr.shape[1],couche_cachés=[5], n_sorties=1,alpha=0.01)
-mlp1.train(X_entr,Y_entr,N_ITER=50)
+mlp1.train(X_entr,Y_entr,N_ITER=300)
 predections=mlp1.prediction(X_test)
-"""print("--Predection: \n ",predections.T)
-print("Y:",Y_test)"""
+mlp1.sauvegarder_meill_cordoo(X_test, Y_test,predections)
+print("--Predection: \n ",predections.T)
+print("Y:",Y_test)
 acc = mlp.accuracy(predections, Y_test)
 print(f"Accurcy sur le test : {acc * 100} %")
 #----------------------- 5 QST --------------------------------
 #obtenir les prediction pour les donnees de test
+
 predictions_test = mlp1.prediction(X_test)
 prediction_labs = (predictions_test > 0.5).astype(int).flatten()
 #couleur selon la prediction
