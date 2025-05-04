@@ -91,23 +91,37 @@ class MLP:
 
         pred_lbs = (pred > 0.5).astype(int) #convertir les prediction en valeur binaire
         return np.mean(pred_lbs.flatten() == y_true.flatten()) # calculer la precision en comparant les prediction avec les vrais valeur
-    def sauvegarder_meill_cordoo(self,X_test,Y_test, predictions,fichier='coordonee_X_Y_Z.csv'):
+
+    def sauvegarder_meill_cordoo(self, X_test, Y_test, predictions, fichier='Fichie_test.txt'):
         predi = (predictions > 0.5).astype(int).flatten()
         Y_test_flat = Y_test.flatten()
         coord = []
-        #extraire les cordonnees
+        # extraire les cordonnees
         for i in range(len(Y_test)):
-            if predi[i] ==  Y_test_flat[i]:
+            if predi[i] == Y_test_flat[i]:
                 x, y, z = X_test[i][:3]
-                pred_valu= predi[i]
-                coord.append([x, y, z, pred_valu])
-        #Sauvga si les cordds sont correct
+
+                coord.append([x, y, z])
+        # Sauvga si les cordds sont correct
         if coord:
-            df = pd.DataFrame(coord, columns=["x","y","z","prediction"])
+            df = pd.DataFrame(coord, columns=["x", "y", "z"])
             df.to_csv(fichier, index=False, sep=' ', header=False)
             print(f"{len(df)} coordonnees sauvgarder dans le ficier {fichier}")
         else:
             print("Aucune coordonnee correct a sauvgarder.")
+
+
+    def prdic_et_sauvgarder_coords(self,fichier, fichier_sortie):
+        #charger des coordonn
+        coords = np.loadtxt(fichier)
+        #prediction
+        prediction=self.prediction(coords)
+        pred_labels = (prediction>0.5).astype(int).flatten()
+        reslts = np.hstack((coords, pred_labels.reshape(-1,1)))
+        #sauvgarde
+        np.savetxt(fichier_sortie, reslts, fmt='%.15f %.15f %.15f %d ',delimiter=' ')
+        print(f"{len(reslts)} coordonnees avec prediction sauvgarder dans '{fichier_sortie}'")
+
 
     def sauvgarder_poids(self, fichier = 'poids_MLP'):
         donnees =[]
@@ -157,10 +171,16 @@ Y_entr, Y_test = Y[indices[:ens_entr]], Y[indices[ens_entr:]]
 mlp1 = MLP(n_entrées=X_entr.shape[1],couche_cachés=[10], n_sorties=1,alpha=0.01)
 mlp1.train(X_entr,Y_entr,N_ITER=300)
 predections=mlp1.prediction(X_test)
-mlp1.sauvegarder_meill_cordoo(X_test, Y_test,predections)
+#fonctin pour cree le fichier test
+#mlp1.sauvegarder_meill_cordoo(X_test, Y_test)
 mlp1.sauvgarder_poids("poids_biais.csv")
-print("--Predection: \n ",predections.T)
-print("Y:",Y_test)
+
+#fonc pour la predict des coord de fichier test
+mlp1.prdic_et_sauvgarder_coords('Fichie_test','resultats.txt')
+
+"""print("--Predection: \n ",predections.T)
+print("Y:",Y_test)"""
+
 acc = mlp1.accuracy(predections, Y_test)
 print(f"Accurcy sur le test : {acc * 100} %")
 #----------------------- 5 QST --------------------------------
