@@ -171,6 +171,7 @@ Y_entr, Y_test = Y[indices[:ens_entr]], Y[indices[ens_entr:]]
 mlp1 = MLP(n_entrées=X_entr.shape[1],couche_cachés=[10], n_sorties=1,alpha=0.01)
 mlp1.train(X_entr,Y_entr,N_ITER=300)
 predections=mlp1.prediction(X_test)
+
 #fonctin pour cree le fichier test
 #mlp1.sauvegarder_meill_cordoo(X_test, Y_test)
 mlp1.sauvgarder_poids("poids_biais.csv")
